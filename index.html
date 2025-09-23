@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
@@ -202,8 +202,8 @@
                         <input type="text" id="name" name="name" required class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-accent">
                     </div>
                     <div class="mb-6">
-                        <label for="email" class="block text-gray-300 font-bold mb-2">Correo Electrónico</label>
-                        <input type="email" id="email" name="email" required class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-accent">
+                        <label for="whatsapp" class="block text-gray-300 font-bold mb-2">Número de WhatsApp</label>
+                        <input type="tel" id="whatsapp" name="whatsapp" required class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-accent">
                     </div>
                     <div class="mb-6">
                         <label for="message" class="block text-gray-300 font-bold mb-2">Mensaje (Opcional)</label>
@@ -263,19 +263,34 @@
     </footer>
 
     <script>
-        // JavaScript existente para el formulario de membresía
+        // JavaScript para el formulario de membresía con WhatsApp
         document.getElementById('membership-form').addEventListener('submit', function(event) {
             event.preventDefault(); // Evitar el envío de formulario predeterminado
+
             const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
+            const whatsapp = document.getElementById('whatsapp').value;
+            const message = document.getElementById('message').value;
             const formMessage = document.getElementById('form-message');
-            if (name && email) {
-                formMessage.textContent = '¡Gracias por tu interés! Nos pondremos en contacto contigo en breve.';
+
+            if (name && whatsapp) {
+                // TODO: Reemplaza 'TU_NUMERO_DE_WHATSAPP' con tu número, incluyendo el código de país.
+                // Ejemplo: +51 987654321, debe ser '51987654321'
+                const yourWhatsappNumber = '51987654321'; 
+
+                const encodedMessage = encodeURIComponent(`¡Hola! Mi nombre es ${name} y estoy interesado en una membresía en MEGAGYM. Mi número de WhatsApp es ${whatsapp}. Mensaje: ${message}`);
+                const whatsappUrl = `https://wa.me/${yourWhatsappNumber}?text=${encodedMessage}`;
+
+                formMessage.textContent = '¡Gracias por tu interés! Se ha abierto una nueva pestaña. Por favor, haz clic en "Enviar" para enviarnos tus datos.';
                 formMessage.classList.add('bg-green-600', 'text-white');
                 formMessage.classList.remove('bg-red-600', 'hidden');
+
+                // Abrir la URL de WhatsApp en una nueva pestaña
+                window.open(whatsappUrl, '_blank');
+
+                // Limpiar el formulario después de la acción
                 document.getElementById('membership-form').reset();
             } else {
-                formMessage.textContent = 'Por favor, completa todos los campos obligatorios.';
+                formMessage.textContent = 'Por favor, completa los campos de Nombre Completo y Número de WhatsApp.';
                 formMessage.classList.add('bg-red-600', 'text-white');
                 formMessage.classList.remove('bg-green-600', 'hidden');
             }
@@ -307,6 +322,14 @@
             const systemPrompt = "Actúa como un entrenador personal experto. Genera un plan de entrenamiento semanal para un principiante en español. El plan debe ser para 3 días (Lunes, Miércoles, Viernes) y detallar el calentamiento, los ejercicios principales con series y repeticiones, y un enfriamiento.";
             const userQuery = `Mi objetivo de fitness es: ${goal}`;
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                tools: [{ "google_search": {} }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
 
             let response;
             let retries = 0;
@@ -364,3 +387,4 @@
     </script>
 </body>
 </html>
+
